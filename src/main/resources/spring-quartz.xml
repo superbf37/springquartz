@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean name="myJobScheduleTask" class="org.superbf.MyJob"></bean>
+
+    <bean id="printWorkTimeShelvesInvokingJob"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="myJobScheduleTask" />
+        <property name="targetMethod" value="printWorkTime" />
+    </bean>
+
+    <bean id="myJobShelvesTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="printWorkTimeShelvesInvokingJob" />
+        <property name="cronExpression" value="0/5 * * * * ? " />
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+          lazy-init="false" destroy-method="destroy">
+        <property name="triggers">
+            <list>
+                <ref bean="myJobShelvesTrigger" />
+            </list>
+        </property>
+    </bean>
+</beans>
